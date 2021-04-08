@@ -1,0 +1,18 @@
+[package]
+name = "example"
+version = "0.1.0"
+authors = ["s-horii"]
+edition = "2018"
+
+[[example]]
+path = "./src/main.rs"
+name = "asset-example"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+asset = { path = "../asset" }
+
+[dependencies]
+asset = { path = "../asset" }
+hex-literal = "0.3.1"
