@@ -12,7 +12,6 @@ name = "asset-example"
 
 [build-dependencies]
 asset = { path = "../asset" }
-builder = { path = "../builder" }
 
 [dependencies]
 asset = { path = "../asset" }

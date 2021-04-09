@@ -4,14 +4,6 @@
 name = "asset"
 version = "0.1.0"
 dependencies = [
- "uuid",
-]
-
-[[package]]
-name = "builder"
-version = "0.1.0"
-dependencies = [
- "asset",
  "hex-literal",
  "proc-macro2",
  "quote",
@@ -30,7 +22,6 @@ name = "example"
 version = "0.1.0"
 dependencies = [
  "asset",
- "builder",
  "hex-literal",
  "uuid",
 ]

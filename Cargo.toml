@@ -2,5 +2,4 @@
 members = [
     "example",
     "asset",
-    "builder",
 ]
