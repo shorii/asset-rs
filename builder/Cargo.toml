@@ -1,0 +1,15 @@
+[package]
+name = "builder"
+version = "0.1.0"
+authors = ["s-horii"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+quote = "1.0.9"
+hex-literal = "0.3.1"
+asset = { path = "../asset" }
+uuid = { version = "0.8", features = ["v4"] }
+syn = "1.0.6"
+proc-macro2 = "1.0.2"

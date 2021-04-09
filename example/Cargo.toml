@@ -12,7 +12,9 @@ name = "asset-example"
 
 [build-dependencies]
 asset = { path = "../asset" }
+builder = { path = "../builder" }
 
 [dependencies]
 asset = { path = "../asset" }
 hex-literal = "0.3.1"
+uuid = { version = "0.8", features = ["v4"] }
