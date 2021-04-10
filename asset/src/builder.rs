@@ -9,8 +9,13 @@ use uuid::Uuid;
 
 pub struct AssetBuilder {}
 
+struct FnTokenStreamSet {
+    define: TokenStream,
+    call: TokenStream,
+}
+
 impl AssetBuilder {
-    fn build_asset_file<P: AsRef<Path>>(src: P, name: &str) -> TokenStream {
+    fn build_asset_file<P: AsRef<Path>>(src: P, name: &str) -> FnTokenStreamSet {
         let file = File::open(src).unwrap();
         let mut reader = BufReader::new(file);
         let mut data = vec![];
@@ -28,18 +33,23 @@ impl AssetBuilder {
                 Span::call_site()
             )
         );
-        // TODO use this ident
         let init_asset_fn_ident = format_ident!("init_asset{}", data_ident);
-        quote! {
-            const #data_ident: [u8; #size] = hex!(#bytes);
-            pub fn init_asset() -> AssetFile<'static, #size>{
-                let parsed_uuid = Uuid::parse_str(#uuid).expect("invalid uuid");
-                AssetFile {
-                    id: parsed_uuid,
-                    name: #name.to_string(),
-                    data_ref: &#data_ident,
+        FnTokenStreamSet {
+            define: quote! {
+                const #data_ident: [u8; #size] = hex!(#bytes);
+                pub fn #init_asset_fn_ident() -> Box<dyn Asset> {
+                    let parsed_uuid = Uuid::parse_str(#uuid).expect("invalid uuid");
+                    let file = AssetFile {
+                        id: parsed_uuid,
+                        name: #name.to_string(),
+                        data_ref: &#data_ident,
+                    };
+                    Box::new(file)
                 }
-            }
+            },
+            call: quote! {
+                #init_asset_fn_ident()
+            },
         }
     }
 
@@ -47,23 +57,29 @@ impl AssetBuilder {
         let use_statement = quote! {
             use hex_literal::hex;
             use asset::file::AssetFile;
+            use asset::types::Asset;
             use uuid::Uuid;
         };
-
+        let mut defines = vec![];
+        let mut calls = vec![];
         let path: &Path = src.as_ref();
         if let Some(os_name) = path.file_name() {
             if let Some(name) = os_name.to_str() {
                 if path.is_file() {
-                    let init_code = Self::build_asset_file(path, &name);
-                    return quote! {
-                        #use_statement
-                        #init_code
-                    };
+                    let fn_token_stream_set = Self::build_asset_file(path, &name);
+                    defines.push(fn_token_stream_set.define);
+                    calls.push(fn_token_stream_set.call);
                 } else {
                     panic!("Cannot convert directory to Asset yet.");
                 }
             }
         }
-        panic!("Failed to retrieve filename");
+        quote! {
+            #use_statement
+            #(#defines)*
+            fn init_asset() -> Box<dyn Asset>{
+                #(#calls)*
+            }
+        }
     }
 }
