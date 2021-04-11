@@ -62,8 +62,8 @@ impl AssetBuilder {
         let dir_defines = dirs.iter().map(|f| f.define.clone()).collect::<Vec<_>>();
         let dir_calls = dirs.iter().map(|d| d.call.clone()).collect::<Vec<_>>();
         let define = quote! {
-            #(#file_defines);*
-            #(#dir_defines);*
+            #(#file_defines)*
+            #(#dir_defines)*
 
             fn #init_asset_fn_ident() -> Box<dyn IAssetDir>{
                 let parsed_uuid = Uuid::parse_str(#uuid).expect("invalid uuid");
@@ -169,7 +169,7 @@ impl AssetBuilder {
                     return quote! {
                         #use_statement
                         #define
-                        fn init_asset() -> Box<dyn IAssetFile>{
+                        pub fn init_asset() -> Box<dyn IAssetFile>{
                             #call
                         }
                     };
@@ -204,7 +204,7 @@ impl AssetBuilder {
                     //     Box::new(dir)
                     // }
                     //
-                    // fn init_asset() -> Box<dyn IAssetDir> {
+                    // pub fn init_asset() -> Box<dyn IAssetDir> {
                     //     init_asset__DIR_31C82C5F81194FF5B423FF502A53199F()
                     // }
                     let fn_token_stream_set = Self::build_asset_dir(path, &name);
@@ -213,7 +213,7 @@ impl AssetBuilder {
                     return quote! {
                         #use_statement
                         #define
-                        fn init_asset() -> Box<dyn IAssetDir>{
+                        pub fn init_asset() -> Box<dyn IAssetDir>{
                             #call
                         }
                     };
