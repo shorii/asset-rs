@@ -1,3 +1,4 @@
+use asset::init;
 use std::str;
 
 include!(concat!(env!("OUT_DIR"), "/asset.rs"));
@@ -10,7 +11,7 @@ fn byte_to_string(buf: &[u8]) -> String {
 }
 
 fn main() -> Result<(), std::io::Error> {
-    let asset = init_asset();
+    let asset = init!();
     println!("dirname: {:?}", asset.name());
     for dir in asset.dirs() {
         println!("\tdirname: {:?}", dir.name());
