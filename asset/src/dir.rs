@@ -1,29 +1,24 @@
-use super::file::IAssetFile;
+use super::file::AssetFile;
 use uuid::Uuid;
 
-pub struct AssetDir {
+#[derive(Debug, Clone)]
+pub struct AssetDir<'a> {
     pub id: Uuid,
     pub name: String,
-    pub dirs: Vec<Box<dyn IAssetDir>>,
-    pub files: Vec<Box<dyn IAssetFile>>,
+    pub dirs: Vec<AssetDir<'a>>,
+    pub files: Vec<AssetFile<'a>>,
 }
 
-pub trait IAssetDir {
-    fn name(&self) -> String;
-    fn dirs(&self) -> &Vec<Box<dyn IAssetDir>>;
-    fn files(&self) -> &Vec<Box<dyn IAssetFile>>;
-}
-
-impl IAssetDir for AssetDir {
-    fn name(&self) -> String {
+impl<'a> AssetDir<'a> {
+    pub fn name(&self) -> String {
         self.name.clone()
     }
 
-    fn dirs(&self) -> &Vec<Box<dyn IAssetDir>> {
+    pub fn dirs(&self) -> &Vec<AssetDir> {
         &self.dirs
     }
 
-    fn files(&self) -> &Vec<Box<dyn IAssetFile>> {
+    pub fn files(&self) -> &Vec<AssetFile> {
         &self.files
     }
 }

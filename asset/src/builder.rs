@@ -65,9 +65,9 @@ impl AssetBuilder {
             #(#file_defines)*
             #(#dir_defines)*
 
-            fn #init_asset_fn_ident() -> Box<dyn IAssetDir>{
+            fn #init_asset_fn_ident() -> AssetDir<'static> {
                 let parsed_uuid = Uuid::parse_str(#uuid).expect("invalid uuid");
-                let dir = AssetDir {
+                AssetDir {
                     id: parsed_uuid,
                     name: #name.to_string(),
                     dirs: vec![
@@ -76,8 +76,7 @@ impl AssetBuilder {
                     files: vec![
                         #(#file_calls),*
                     ],
-                };
-                Box::new(dir)
+                }
             }
         };
 
@@ -114,14 +113,13 @@ impl AssetBuilder {
         FnTokenStreamSet {
             define: quote! {
                 const #data_ident: [u8; #size] = hex!(#bytes);
-                pub fn #init_asset_fn_ident() -> Box<dyn IAssetFile> {
+                pub fn #init_asset_fn_ident() -> AssetFile<'static> {
                     let parsed_uuid = Uuid::parse_str(#uuid).expect("invalid uuid");
-                    let file = AssetFile {
+                    AssetFile {
                         id: parsed_uuid,
                         name: #name.to_string(),
                         data_ref: &#data_ident,
-                    };
-                    Box::new(file)
+                    }
                 }
             },
             call: quote! {
@@ -133,8 +131,8 @@ impl AssetBuilder {
     pub fn build<P: AsRef<Path>>(src: P) -> TokenStream {
         let use_statement = quote! {
             use hex_literal::hex;
-            use asset::file::{AssetFile, IAssetFile};
-            use asset::dir::{AssetDir, IAssetDir};
+            use asset::file::AssetFile;
+            use asset::dir::AssetDir;
             use uuid::Uuid;
         };
         let path: &Path = src.as_ref();
@@ -169,7 +167,7 @@ impl AssetBuilder {
                     return quote! {
                         #use_statement
                         #define
-                        pub fn init_asset() -> Box<dyn IAssetFile>{
+                        pub fn init_asset() -> AssetFile<'static> {
                             #call
                         }
                     };
@@ -213,7 +211,7 @@ impl AssetBuilder {
                     return quote! {
                         #use_statement
                         #define
-                        pub fn init_asset() -> Box<dyn IAssetDir>{
+                        pub fn init_asset() -> AssetDir<'static> {
                             #call
                         }
                     };
