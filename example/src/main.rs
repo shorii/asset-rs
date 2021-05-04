@@ -24,5 +24,10 @@ fn main() -> Result<(), std::io::Error> {
         println!("\tfilename: {:?}", file.name());
         println!("\tcontent : {:?}", byte_to_string(&*file.content()));
     }
+    let file = asset.find("assets/test3.txt");
+    println!("{:?}", file);
+
+    let file = asset.find("assets/data/test1.txt");
+    println!("{:?}", file);
     Ok(())
 }
